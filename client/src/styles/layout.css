@@ -1,0 +1,57 @@
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+}
+.navbar-nav .nav-item .nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav-link {
+  font-weight: 500;
+}
+.nav-link:hover {
+  background-color: #ffc107;
+  color: #fff !important;
+  font-weight: 500;
+}
+/* Hero section   */
+
+.hero {
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+}
+input::placeholder{
+    font-style: italic;
+}
+
+.search-card:hover{
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    transition: 0.3s ease-in-out;
+}
+
+@media (max-width: 768) {
+  .hero {
+    min-height: 200px;
+  }
+}

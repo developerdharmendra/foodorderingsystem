@@ -1,69 +1,33 @@
 import React, { useEffect, useState } from "react";
 import PublicLayout from "../components/PublicLayout";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-const Home = () => {
+const SearchPage = () => {
+  const query = new URLSearchParams(useLocation().search).get("q") || "";
   const [foods, setFoods] = useState([]);
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_BASE_URL}random-foods/`)
-      .then((response) => {
-        console.log("Response status:", response.status);
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Received data:", data);
-        setFoods(data);
-      });
-  }, []);
+    if (query) {
+      fetch(`${process.env.REACT_APP_API_BASE_URL}food-search/?q=${query}`)
+        .then((response) => {
+          console.log("Response status:", response.status);
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Received data:", data);
+          setFoods(data);
+        });
+    }
+  }, [query]);
+
   return (
     <>
       <PublicLayout>
-        <section
-          className="hero py-5"
-          style={{
-            backgroundImage: "url('/images/bg1.jpg')",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
-          <div className="hero-overlay"></div>
-          <div className="container">
-            <div className="row d-flex justify-content-center align-items-center">
-              <div className="col-md-7 col-12 text-center">
-                <h1 className="text-white display-6 fw-bold">
-                  Quick & Hot Food, Delivered to You
-                </h1>
-                <p className="text-white lead mb-4">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis
-                </p>
-                <form method="GET" className="w-50 mx-auto" action="/search">
-                  <div className="input-group mb-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search for food"
-                      name="q"
-                    />
-                    <button
-                      className="btn btn-primary px-3 text-white"
-                      type="submit"
-                    >
-                      <i className="fa fa-search"></i>
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* random food section  */}
         <section className="py-3">
           <div className="container">
-            <div className="row g-4">
-              <div className="col-12">
-                <h4 className="text-center text-primary mb-4">Most Loved Dishes This Month <span className="badge bg-success">Top Picks</span></h4> 
-              </div>
+            <h4 className="text-primary pb-2 text-center">
+              Results for: "{query}"
+            </h4>
+            <div className="row">
               {foods.length > 0 ? (
                 foods.map((food, index) => (
                   <div className="col-md-3" key={index}>
@@ -96,7 +60,9 @@ const Home = () => {
                               Now
                             </Link>
                           ) : (
-                            <button className="btn btn-outline-secondary btn-sm disabled">
+                            <button
+                              className="btn btn-outline-secondary btn-sm disabled"
+                            >
                               <i className="fas fa-times-circle"></i> Unavailabe
                             </button>
                           )}
@@ -113,10 +79,9 @@ const Home = () => {
             </div>
           </div>
         </section>
-        {/* random food section  */}
       </PublicLayout>
     </>
   );
 };
 
-export default Home;
+export default SearchPage;

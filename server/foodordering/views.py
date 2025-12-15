@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
 from .serializers import *
+import random
 
 # Create your views here.
 @api_view(['POST'])
@@ -48,4 +49,19 @@ def add_food(request):
 def get_foods(request):
     foods = Food.objects.all()
     serializer = FoodSerializer(foods, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def food_search(request):
+    query = request.GET.get('q', '')
+    foods = Food.objects.filter(item_name__icontains=query)
+    serializer = FoodSerializer(foods, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def random_foods(request):
+    foods = list(Food.objects.all())
+    random.shuffle(foods)
+    limited_foods = foods[0:9]
+    serializer = FoodSerializer(limited_foods, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
