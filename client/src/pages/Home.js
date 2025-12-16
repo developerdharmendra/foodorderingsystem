@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PublicLayout from "../components/PublicLayout";
 import { Link } from "react-router-dom";
+import { FaUtensils } from "react-icons/fa";
 
 const Home = () => {
   const [foods, setFoods] = useState([]);
@@ -28,7 +29,7 @@ const Home = () => {
           }}
         >
           <div className="hero-overlay"></div>
-          <div className="container">
+          <div className="container" id="searchItem">
             <div className="row d-flex justify-content-center align-items-center">
               <div className="col-md-7 col-12 text-center">
                 <h1 className="text-white display-6 fw-bold">
@@ -62,7 +63,10 @@ const Home = () => {
           <div className="container">
             <div className="row g-4">
               <div className="col-12">
-                <h4 className="text-center text-primary mb-4">Most Loved Dishes This Month <span className="badge bg-success">Top Picks</span></h4> 
+                <h4 className="text-center text-primary mb-4">
+                  Most Loved Dishes This Month{" "}
+                  <span className="badge bg-success">Top Picks</span>
+                </h4>
               </div>
               {foods.length > 0 ? (
                 foods.map((food, index) => (
@@ -78,7 +82,7 @@ const Home = () => {
                       </div>
                       <div className="card-body">
                         <h5 className="card-title">
-                          <Link to="" className="text-decoration-none">
+                          <Link to={`/food/${food.id}`} className="text-decoration-none">
                             {food.item_name}
                           </Link>
                         </h5>
@@ -89,7 +93,7 @@ const Home = () => {
                           <span className="fw-bold">Rs. {food.item_price}</span>
                           {food.is_available ? (
                             <Link
-                              to=""
+                              to={`/food/${food.id}`}
                               className="btn btn-outline-primary btn-sm"
                             >
                               <i className="fas fa-shopping-basket"></i> Order
@@ -114,6 +118,57 @@ const Home = () => {
           </div>
         </section>
         {/* random food section  */}
+        <section className="py-3 bg-dark text-white">
+          <div className="container">
+            <h3 className="text-center py-2">Ordering in 3 Simple Steps</h3>
+            <div className="row text-center">
+              <div className="col-md-4">
+                <h4>1. Pick a dish you love</h4>
+                <p>
+                  Explore our wide range of dishes, from classic comfort foods
+                  to exotic cuisines, and find the perfect match for your taste
+                  buds.
+                </p>
+              </div>
+              <div className="col-md-4">
+                <h4>2. Choose your delivery location</h4>
+                <p>
+                  Enter your delivery address and let us know where you want
+                  your food delivered to.
+                </p>
+              </div>
+              <div className="col-md-4">
+                <h4>3. Enjoy your delicious meal</h4>
+                <p>
+                  Sit back, relax, and enjoy your food delivered right to your
+                  doorstep.
+                </p>
+              </div>
+            </div>
+            <div className="text-center">
+              <p>Pay easily with Cash on Delivery - No extra charges.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-4 bg-warning text-center text-dark">
+          <h4 className="pb-2">Read to Satisfy Your Hunger?</h4>
+          <Link to="" className="btn btn-primary me-3">
+            <i className="fas fa-shopping-basket"></i> Order Now
+          </Link>
+          <Link to="" className="btn bg-warning-subtle me-3">
+            <FaUtensils /> View all Menu
+          </Link>
+          <a href="#searchItem" className="btn btn-secondary">
+            {" "}
+            <i className="fas fa-search"></i> Search for food
+          </a>
+        </section>
+
+        <section className="py-3">
+
+
+        </section>
       </PublicLayout>
     </>
   );

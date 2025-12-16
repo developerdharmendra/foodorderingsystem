@@ -1,13 +1,13 @@
 from django.db import models
 
 # Create your models here.
-class User(models.Model):
+class RegisterUser(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=50, unique=True)
-    phone = models.CharField(max_length=15)
-    address = models.CharField(max_length=50)
-    password = models.CharField(max_length=50)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15, unique=True)
+    address = models.CharField(max_length=100)
+    password = models.CharField(max_length=128)
     reg_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -31,3 +31,14 @@ class Food(models.Model):
     
     def __str__(self):
         return self.item_name
+
+class Order(models.Model):
+    user = models.ForeignKey(RegisterUser, on_delete=models.CASCADE)
+    food = models.ForeignKey(Food, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    is_order_placed = models.BooleanField(default=False)
+    order_number = models.CharField(max_length=100, null=True)
+    
+    def __str__(self):
+        return f"Order {self.order_number} by {self.user}"
+    

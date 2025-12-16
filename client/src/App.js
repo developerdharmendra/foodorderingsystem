@@ -8,6 +8,9 @@ import AddFood from "./pages/AddFood";
 import ManageFood from "./pages/ManageFood";
 import SearchPage from "./pages/SearchPage";
 import Register from "./pages/Register";
+import Login from "./pages/Login";
+import FoodDetails from "./pages/FoodDetails";
+import Cart from "./pages/Cart";
 
 function App() {
   return (
@@ -16,13 +19,17 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/food/:id" element={<FoodDetails />} />
+          <Route path="/cart" element={<Cart />} />
+
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/add-category" element={<AddCategory />} />
           <Route path="/manage-category" element={<ManageCategory />} />
           <Route path="/add-food" element={<AddFood />} />
           <Route path="/manage-food" element={<ManageFood />} />
-          <Route path="/search" element={<SearchPage />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -15,7 +15,8 @@ class FoodSerializer(serializers.ModelSerializer):
         model = Food
         fields = ['id', 'category', 'category_name', 'item_name', 'item_price', 'item_description', 'item_image', 'item_quantity', 'is_available']   
 
-class UserSerializer(serializers.ModelSerializer):
+class OrderSerializer(serializers.ModelSerializer):
+    food = FoodSerializer(read_only=True)
     class Meta:
-        model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone', 'address', 'password', 'reg_date']
+        model = Order
+        fields = ['id', 'food', 'quantity']

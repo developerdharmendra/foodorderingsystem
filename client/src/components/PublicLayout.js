@@ -1,15 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
+  FaHeart,
   FaHome,
+  FaKey,
+  FaShoppingCart,
   FaSignInAlt,
+  FaSignOutAlt,
   FaTruck,
+  FaUser,
   FaUserPlus,
   FaUserShield,
   FaUtensils,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import "../styles/layout.css"
-const PublicLayout = ({children}) => {
+import "../styles/layout.css";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const PublicLayout = ({ children }) => {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  const userId = localStorage.getItem("userId");
+  const name = localStorage.getItem("userName");
+  useEffect(() => {
+    if (userId) {
+      setIsLoggedIn(true);
+      setUserName(name);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [userId, name]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    toast.success("Logout successful")
+    setIsLoggedIn(false);
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "";
+    const nameParts = name.trim().split(" ");
+    const initials = nameParts
+      .map((part) => part[0].toUpperCase())
+      .slice(0, 2)
+      .join("");
+    return initials;
+  };
+
+  const initials = getInitials(userName);
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm position-fixed top-0 w-100 z-3">
@@ -45,24 +90,97 @@ const PublicLayout = ({children}) => {
                   <FaTruck /> Track
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link to="/register" className="nav-link">
-                  <FaUserPlus /> Register
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to="" className="nav-link">
-                  <FaSignInAlt /> Login
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link to="/admin-login" className="nav-link">
-                  <FaUserShield /> Admin
-                </Link>
-              </li>
+              {!isLoggedIn ? (
+                <>
+                  <li className="nav-item">
+                    <Link to="/register" className="nav-link">
+                      <FaUserPlus /> Register
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/login" className="nav-link">
+                      <FaSignInAlt /> Login
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/admin-login" className="nav-link">
+                      <FaUserShield /> Admin
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="nav-item">
+                    <Link to="/orders" className="nav-link">
+                      <FaUser />
+                      My Orders
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/cart" className="nav-link">
+                      <FaShoppingCart /> Cart
+                    </Link>
+                  </li>
+                  <li className="nav-item me-2">
+                    <Link to="/cart" className="nav-link">
+                      <FaHeart /> Wishlist
+                    </Link>
+                  </li>
+
+                  <li className="nav-item dropdown">
+                    <a
+                      className="nav-link d-flex align-items-center justify-content-center"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        backgroundColor: "#0d6efd",
+                        color: "#fff",
+                        textAlign: "center",
+                        lineHeight: "40px",
+                        fontWeight: "bold",
+                        fontSize: "1rem",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {initials}
+                    </a>
+
+                    <ul className="dropdown-menu mt-3 rounded-0" style={{marginLeft:"-25px"}}>
+                      <li className="dropdown-item">{userName}</li>
+                      <hr className="py-1 my-0"/>
+                      <li>
+                        <Link to="" className="dropdown-item">
+                          <FaUser /> Profile
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="" className="dropdown-item">
+                          <FaKey /> Change Password
+                        </Link>
+                      </li>
+
+                      <li>
+                        <button
+                          
+                          className="dropdown-item text-danger"
+                          onClick={handleLogout}
+                        >
+                          <FaSignOutAlt /> Logout
+                        </button>
+                      </li>
+                    </ul>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>
+        <ToastContainer position="top-right" autoClose={2000} />
       </nav>
       <main className="mt-5 pt-3 bg-body-secondary">{children}</main>
       <footer className="bg-light py-3 text-center">

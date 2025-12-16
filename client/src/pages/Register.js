@@ -18,10 +18,66 @@ const Register = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const handelSubmit = async (e) => {
+    e.preventDefault();
+    const {
+      first_name,
+      last_name,
+      email,
+      phone,
+      address,
+      password,
+      cpassword,
+    } = formData;
+    if (password !== cpassword) {
+      toast.error("Password & Confirm Password do not match");
+      return;
+    }
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}register/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            first_name,
+            last_name,
+            email,
+            phone,
+            address,
+            password,
+          }),
+        }
+      );
+      const result = await response.json();
+      if (response.status === 201) {
+        toast.success(result.message);
+        setFormData({
+          first_name: "",
+          last_name: "",
+          email: "",
+          phone: "",
+          address: "",
+          password: "",
+          cpassword: "",
+        });
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error during category adding:", error);
+      toast.error("An error occurred during category adding");
+    }
+  };
   return (
     <>
       <PublicLayout>
-        <section className="py-4">
+        <section className="py-4 min-vh-100 d-flex align-items-center justify-content-center ">
           <div className="container">
             <div className="row d-flex justify-content-center align-items-center">
               <div className=" col-11 col-md-8 shadow-lg rounded bg-light">
@@ -32,7 +88,7 @@ const Register = () => {
                       <i className="fas fa-user-plus me-2"></i> User
                       Registration
                     </h5>
-                    <form>
+                    <form onSubmit={handelSubmit}>
                       <div className="mb-2">
                         <input
                           type="text"
