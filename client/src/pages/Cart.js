@@ -3,6 +3,7 @@ import PublicLayout from "../components/PublicLayout";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaMinus, FaPlus } from "react-icons/fa";
 
 const Cart = () => {
   const userId = localStorage.getItem("userId");
@@ -33,6 +34,71 @@ const Cart = () => {
       })
       .catch(() => toast.error("Failed to load cart"));
   }, [userId, navigate]);
+
+  const updateQuantity = async (orderId, newQuantity) => {
+    if (newQuantity < 1) return;
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}update-cart-quantity/`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: orderId,
+            quantity: newQuantity,
+          }),
+        }
+      );
+      if (response.status === 200) {
+        const updated = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}cart/${userId}/`
+        );
+        const data = await updated.json();
+        setCartItems(data);
+
+        const total = data.reduce(
+          (acc, item) => acc + item.food.item_price * item.quantity,
+          0
+        );
+        setGrandTotal(total);
+        toast.success("Quantity updated successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to update quantity");
+    }
+  };
+
+  const deleteCartItem = async (orderId) => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this item?"
+    );
+    if (!isConfirmed) return;
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}delete-cart-item/${orderId}/`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.status === 200) {
+        const updated = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}cart/${userId}/`
+        );
+        const data = await updated.json();
+        setCartItems(data);
+        const total = data.reduce(
+          (acc, item) => acc + item.food.item_price * item.quantity,
+          0
+        );
+        setGrandTotal(total);
+        toast.success(data.message || "Item deleted successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to delete item");
+    }
+  };
+
   return (
     <PublicLayout>
       <ToastContainer position="top-right" autoClose={2000} />
@@ -50,7 +116,6 @@ const Cart = () => {
                     <th>S.No</th>
                     <th>Image</th>
                     <th>Item Name</th>
-                    <th>Quantity</th>
                     <th>Price(Rs)</th>
                     <th>Action</th>
                   </tr>
@@ -80,32 +145,55 @@ const Cart = () => {
                             />
                           </td>
                           <td>{item.food?.item_name}</td>
-                          <td>{item.quantity}</td>
                           <td>{item.food?.item_price * item.quantity}</td>
                           <td>
-                            <button className="btn btn-danger btn-sm">
-                              <i className="fa fa-trash"></i>
+                            <button
+                              className="btn btn-outline-secondary btn-sm"
+                              disabled={item.quantity <= 1}
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity - 1)
+                              }
+                            >
+                              <FaMinus />
                             </button>
-                            
+                            <span className="mx-3 fw-bold">
+                              {item.quantity}
+                            </span>
+                            <button
+                              className="btn btn-outline-secondary btn-sm"
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity + 1)
+                              }
+                            >
+                              <FaPlus />
+                            </button>
+                            <button className="btn btn-outline-danger btn-sm ms-3" onClick={() => deleteCartItem(item.id)}>
+                              <i className="fas fa-trash"></i>
+                            </button>
                           </td>
                         </tr>
                       ))}
 
                       <tr>
-                        <td colSpan="4" className="text-end fw-bold">
+                        <td colSpan="3" className="text-end fw-bold">
                           Grand Total:
                         </td>
                         <td className="fw-bold">{grandTotal}</td>
+                        <td>
+                          <button
+                            className="btn btn-outline-success btn-sm"
+                            onClick={()=> navigate("/payment")}
+                          >
+                            <i className="fa fa-shopping-cart"></i> Proceed to Payment
+                          </button>
+                        </td>
                       </tr>
                     </>
                   )}
                 </tbody>
               </table>
-
             </div>
-
           </div>
-          
         </div>
       </section>
     </PublicLayout>

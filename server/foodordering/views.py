@@ -144,3 +144,65 @@ def get_cart_items(request,user_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PUT'])
+def update_cart_quantity(request):
+    orderId = request.data.get('orderId')
+    quantity = request.data.get('quantity') 
+    try:
+        order = Order.objects.get(id=orderId, is_order_placed=False)
+        order.quantity = quantity
+        order.save()
+        return Response({'message': 'Cart quantity updated successfully'}, status=status.HTTP_200_OK)
+    except Order.DoesNotExist:
+        return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_cart_item(requset, id):
+    try:
+        order = Order.objects.get(id=id, is_order_placed=False)
+        order.delete()
+        return Response({'message': 'Item deleted successfully'}, status=status.HTTP_200_OK)
+    except Order.DoesNotExist:
+        return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+def make_unique_order_number():
+    while True:
+        order_number = str(random.randint(100000000, 999999999))
+        if not Order.objects.filter(order_number=order_number).exists():
+            return order_number
+
+@api_view(['POST'])
+def place_order(request):
+    userId = request.data.get('userId')
+    address = request.data.get('address')
+    paymentMode = request.data.get('paymentMode')
+    cardNumber = request.data.get('cardNumber')
+    expiryDate = request.data.get('expiryDate')
+    cvv = request.data.get('cvvv')
+
+    try:
+        order = Order.objects.filter(user_id = userId, is_order_placed=False)
+        order_number = make_unique_order_number()
+        order.update(order_number = order_number, is_order_placed=True)
+
+        OrderAddress.objects.create(
+            user_id = userId,
+            order_number = order_number,
+            address = address,
+        )
+        PaymentDetails.objects.create(
+            user_id = userId,
+            order_number = order_number,
+            payment_mode = paymentMode,
+            card_number =  cardNumber if paymentMode == 'online' else None,
+            expiry_date =  expiryDate if paymentMode == 'online' else None,
+            cvv =  cvv if paymentMode == 'online' else None,
+        )
+        return Response({'message': 'Order placed successfully'}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)

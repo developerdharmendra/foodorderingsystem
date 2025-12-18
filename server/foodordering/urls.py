@@ -14,4 +14,7 @@ urlpatterns = [
     path('food-details/<int:id>/', food_details, name="food-details"),
     path('add-to-cart/', add_to_cart, name='add-to-cart'),
     path('cart/<int:user_id>/', get_cart_items, name='cart'),
+    path('update-cart-quantity/', update_cart_quantity, name='update-cart-quantity'),
+    path('delete-cart-item/<int:id>/', delete_cart_item, name='delete-cart-item'),
+    path('place-order/', place_order, name='place-order'),
 ]
