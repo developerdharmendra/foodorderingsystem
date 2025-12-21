@@ -10,7 +10,8 @@ import random
 from django.db.models import Q
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import get_object_or_404
-
+from django.http import HttpResponse
+from xhtml2pdf import pisa
 
 # Create your views here.
 @api_view(['POST'])
@@ -109,6 +110,33 @@ def login_user(request):
     except RegisterUser.DoesNotExist:
         return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
+@api_view(['GET'])
+def get_user_profile(request, user_id):
+    try:
+        user = RegisterUser.objects.get(id=user_id)
+        serializer = RegisterUserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except RegisterUser.DoesNotExist:
+        return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['PUT'])
+def update_user_profile(request, user_id):
+    try:
+        user = RegisterUser.objects.get(id=user_id)
+        
+        serializer = RegisterUserSerializer(user, data=request.data, partial=True)  
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except RegisterUser.DoesNotExist:
+        return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 
 @api_view(['POST'])
 def add_to_cart(request):
@@ -206,3 +234,56 @@ def place_order(request):
         return Response({'message': 'Order placed successfully'}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def user_orders(request, user_id):
+    orders = OrderAddress.objects.filter(user_id=user_id).order_by('-order_time')
+    serializer = MyOrdersListSerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def order_by_order_number(request, order_number):
+    orders = Order.objects.filter(order_number=order_number, is_order_placed=True).select_related('food')
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def order_address(request, order_number):
+    order_address = OrderAddress.objects.get(order_number=order_number)
+    serializer = OrderAddressSerializer(order_address)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+def get_invoice(request, order_number):
+    orders = (
+        Order.objects
+        .filter(order_number=order_number, is_order_placed=True)
+        .select_related('food')
+    )
+    
+    address = get_object_or_404(OrderAddress, order_number=order_number)
+    payment_details = get_object_or_404(PaymentDetails, order_number=order_number)
+    user = payment_details.user 
+
+    grand_total = 0
+    order_list = []
+
+    for order in orders:
+        total_price = order.food.item_price * order.quantity
+        grand_total += total_price
+
+        order_list.append({
+            'food': order.food,
+            'quantity': order.quantity,
+            'total_price': total_price,
+        })
+
+    context = {
+        'order_number': order_number,
+        'orders_data': order_list,
+        'grand_total': grand_total,
+        'address': address,
+        'user': user,  
+        'payment_mode': payment_details.payment_mode, 
+    }
+
+    return render(request, 'invoice.html', context)

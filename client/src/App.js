@@ -12,6 +12,9 @@ import Login from "./pages/Login";
 import FoodDetails from "./pages/FoodDetails";
 import Cart from "./pages/Cart";
 import PaymentPage from "./pages/PaymentPage";
+import Myorders from "./pages/Myorders";
+import OrderDetails from "./pages/OrderDetails";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -25,6 +28,9 @@ function App() {
           <Route path="/food/:id" element={<FoodDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/my-orders" element={<Myorders />} />
+          <Route path="/order-details/:order_number" element={<OrderDetails />} />
+          <Route path="/my-profile" element={<ProfilePage />} />
 
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />

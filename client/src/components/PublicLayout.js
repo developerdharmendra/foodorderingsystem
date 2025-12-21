@@ -111,7 +111,7 @@ const PublicLayout = ({ children }) => {
               ) : (
                 <>
                   <li className="nav-item">
-                    <Link to="/orders" className="nav-link">
+                    <Link to="/my-orders" className="nav-link">
                       <FaUser />
                       My Orders
                     </Link>
@@ -154,7 +154,7 @@ const PublicLayout = ({ children }) => {
                       <li className="dropdown-item">{userName}</li>
                       <hr className="py-1 my-0"/>
                       <li>
-                        <Link to="" className="dropdown-item">
+                        <Link to="/my-profile" className="dropdown-item">
                           <FaUser /> Profile
                         </Link>
                       </li>
