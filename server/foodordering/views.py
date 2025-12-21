@@ -57,6 +57,49 @@ def get_foods(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
+def orders_not_confirmed(request):
+    orders = OrderAddress.objects.filter(order_final_status__isnull=True).order_by('-order_time')
+    serializer = OrderSummarySerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def orders_confirmed(request):
+    orders = OrderAddress.objects.filter(order_final_status='Order Confirmed').order_by('-order_time')
+    serializer = OrderSummarySerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def food_being_prepared(request):
+    orders = OrderAddress.objects.filter(order_final_status='Food being prepared').order_by('-order_time')
+    serializer = OrderSummarySerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def food_pickup(request):
+    orders = OrderAddress.objects.filter(order_final_status='Food Pickup').order_by('-order_time')
+    serializer = OrderSummarySerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def food_delivered(request):
+    orders = OrderAddress.objects.filter(order_final_status='Food Delivered').order_by('-order_time')
+    serializer = OrderSummarySerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def order_cancelled(request):
+    orders = OrderAddress.objects.filter(order_final_status='Order Cancelled').order_by('-order_time')
+    serializer = OrderSummarySerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def all_orders(request):
+    orders = OrderAddress.objects.all().order_by('-order_time')
+    serializer = OrderSummarySerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# frontend 
+@api_view(['GET'])
 def food_search(request):
     query = request.GET.get('q', '')
     foods = Food.objects.filter(item_name__icontains=query)
@@ -133,6 +176,22 @@ def update_user_profile(request, user_id):
 
     except RegisterUser.DoesNotExist:
         return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def change_user_password(request, user_id):
+    try:
+        currentPassword = request.data.get('currentPassword')
+        newPassword = request.data.get('newPassword')
+        user = RegisterUser.objects.get(id=user_id)
+        if not check_password(currentPassword, user.password):
+            return Response({'message': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.password = make_password(newPassword)
+        user.save()
+        return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
     
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)

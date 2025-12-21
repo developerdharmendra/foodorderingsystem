@@ -15,6 +15,8 @@ import PaymentPage from "./pages/PaymentPage";
 import Myorders from "./pages/Myorders";
 import OrderDetails from "./pages/OrderDetails";
 import ProfilePage from "./pages/ProfilePage";
+import ChangePassword from "./pages/ChangePassword";
+import OrderNotConfirm from "./pages/OrderNotConfirm";
 
 function App() {
   return (
@@ -31,6 +33,7 @@ function App() {
           <Route path="/my-orders" element={<Myorders />} />
           <Route path="/order-details/:order_number" element={<OrderDetails />} />
           <Route path="/my-profile" element={<ProfilePage />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
@@ -38,6 +41,7 @@ function App() {
           <Route path="/manage-category" element={<ManageCategory />} />
           <Route path="/add-food" element={<AddFood />} />
           <Route path="/manage-food" element={<ManageFood />} />
+          <Route path="/not-confirmed" element={<OrderNotConfirm />} />
         </Routes>
       </BrowserRouter>
     </>

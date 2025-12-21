@@ -5,12 +5,18 @@ urlpatterns = [
     path('register/', register_user, name='register'),
     path('user/<int:user_id>/', get_user_profile, name="get-user"),
     path('update-user/<int:user_id>/', update_user_profile, name="update-user"),
+    path('change-password/<int:user_id>/', change_user_password, name="change-user-password"),
     path('login/', login_user, name='login'),
+
     path('admin-login/', admin_login_api, name='admin-login'),
     path('add-category/', add_category, name='add-category'),
     path('get-categories/', get_categories, name='get-categories'),
     path('add-food/', add_food, name='add-food'),
     path('get-foods/', get_foods, name='get-foods'),
+    path('orders-not-confirmed/', orders_not_confirmed, name='orders-not-confirmed'),
+
+
+
     path('food-search/', food_search, name="food_search"),
     path('random-foods/', random_foods, name="random-foods"),
     path('food-details/<int:id>/', food_details, name="food-details"),

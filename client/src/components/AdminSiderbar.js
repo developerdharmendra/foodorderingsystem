@@ -112,7 +112,7 @@ const AdminSiderbar = () => {
         {openMenus.order && (
           <div className="ps-4">
             <Link
-              to=""
+              to="/not-confirmed"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Not Confirmed

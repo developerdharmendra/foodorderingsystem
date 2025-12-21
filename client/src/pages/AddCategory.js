@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const AddCategory = () => {
-  const [name, setName] = React.useState("");
+  const [name, setName] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    const adminUser = localStorage.getItem("adminUser");
+    if (!adminUser) {
+      navigate("/admin-login");
+    }
+  }, [navigate]);
   const handelSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -21,7 +29,7 @@ const AddCategory = () => {
       const data = await response.json();
       if (response.status === 201) {
         toast.success(data.message);
-        setName('')
+        setName("");
       } else {
         toast.error(data.message);
       }
@@ -63,7 +71,10 @@ const AddCategory = () => {
             </div>
           </div>
           <div className="col-md-4 d-flex justify-content-center align-items-center">
-             <i className="fas fa-utensils" style={{fontSize:'180px', color:'#e5e5e5'}}></i>
+            <i
+              className="fas fa-utensils"
+              style={{ fontSize: "180px", color: "#e5e5e5" }}
+            ></i>
           </div>
         </div>
         <ToastContainer position="top-right" autoClose={2000} />

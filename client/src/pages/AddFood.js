@@ -3,8 +3,11 @@ import AdminLayout from "../components/AdminLayout";
 import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const AddFood = () => {
+  const adminUser = localStorage.getItem("adminUser");
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     category: "",
@@ -15,6 +18,10 @@ const AddFood = () => {
     item_quantity: "",
   });
   useEffect(() => {
+    if (!adminUser) {
+      navigate("/admin-login");
+      return;
+    }
     fetch(`${process.env.REACT_APP_API_BASE_URL}get-categories/`)
       .then((response) => response.json())
       .then((data) => {

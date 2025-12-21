@@ -48,3 +48,8 @@ class OrderAddressSerializer(serializers.ModelSerializer):
             return payment.payment_mode
         except PaymentDetails.DoesNotExist:
             return None
+        
+class OrderSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model= OrderAddress
+        fields = ['id', 'order_number', 'address', 'order_time', 'order_final_status']
