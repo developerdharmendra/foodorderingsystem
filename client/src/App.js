@@ -17,6 +17,14 @@ import OrderDetails from "./pages/OrderDetails";
 import ProfilePage from "./pages/ProfilePage";
 import ChangePassword from "./pages/ChangePassword";
 import OrderNotConfirm from "./pages/OrderNotConfirm";
+import OrderConfirmed from "./pages/OrderConfirmed";
+import FoodBeingPrepared from "./pages/FoodBeingPrepared";
+import FoodPickup from "./pages/FoodPickup";
+import OrderDelivered from "./pages/OrderDelivered";
+import OrderCancelled from "./pages/OrderCancelled";
+import AllOrders from "./pages/AllOrders";
+import OrderReport from "./pages/OrderReport";
+import ViewFoodOrder from "./pages/ViewFoodOrder";
 
 function App() {
   return (
@@ -42,6 +50,15 @@ function App() {
           <Route path="/add-food" element={<AddFood />} />
           <Route path="/manage-food" element={<ManageFood />} />
           <Route path="/not-confirmed" element={<OrderNotConfirm />} />
+          <Route path="/order-confirmed" element={<OrderConfirmed />} />
+          <Route path="/food-prepared" element={<FoodBeingPrepared />} />
+          <Route path="/food-pickup" element={<FoodPickup />} />
+          <Route path="/order-delivered" element={<OrderDelivered />} />
+          <Route path="/order-cancelled" element={<OrderCancelled />} />
+          <Route path="/all-orders" element={<AllOrders />} />
+          <Route path="/order-report" element={<OrderReport />} />
+          <Route path="/admin-view-order-detail/:order_number" element={<ViewFoodOrder />} />
+
         </Routes>
       </BrowserRouter>
     </>

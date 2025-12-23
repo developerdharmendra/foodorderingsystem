@@ -36,7 +36,7 @@ const AdminSiderbar = () => {
       </div>
       <div className="list-group list-group-flush">
         <Link
-          to=""
+          to="/admin-dashboard"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
           <FaThLarge /> Dashboard
@@ -118,31 +118,37 @@ const AdminSiderbar = () => {
               Not Confirmed
             </Link>
             <Link
-              to=""
+              to="/order-confirmed"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Confirmed
             </Link>
             <Link
-              to=""
+              to="/food-prepared"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Being Prepared
             </Link>
             <Link
-              to=""
+              to="/food-pickup"
+              className="list-group-item list-group-item-action bg-dark text-white border-0"
+            >
+              Food Pickup
+            </Link>
+            <Link
+              to="/order-delivered"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Delivered
             </Link>
             <Link
-              to=""
+              to="/order-cancelled"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               Cancelled
             </Link>
             <Link
-              to=""
+              to="/all-orders"
               className="list-group-item list-group-item-action bg-dark text-white border-0"
             >
               All Orders
@@ -151,7 +157,7 @@ const AdminSiderbar = () => {
         )}
 
         <Link
-          to=""
+          to="/order-report"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
           <FaCalendar /> Date Report

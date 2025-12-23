@@ -14,7 +14,15 @@ urlpatterns = [
     path('add-food/', add_food, name='add-food'),
     path('get-foods/', get_foods, name='get-foods'),
     path('orders-not-confirmed/', orders_not_confirmed, name='orders-not-confirmed'),
-
+    path('orders-confirmed/', orders_confirmed, name='orders-confirmed'),
+    path('food-being-prepared/', food_being_prepared, name='food-being-prepared'),
+    path('foodpickup/', food_pickup, name='foodpickup'),
+    path('orders-delivered/', food_delivered, name='orders-delivered'),
+    path('order-cancelled/', order_cancelled, name='order-cancelled'),
+    path('all-orders/', all_orders, name='all-foods'),
+    path('order-report/', orders_report, name='orders-report'),
+    path('view-order-detail/<str:order_number>/', view_order_detail, name='view-order-detail'),
+    path('update-order-tracking-info/', update_order_status, name='update-order-status' ),
 
 
     path('food-search/', food_search, name="food_search"),

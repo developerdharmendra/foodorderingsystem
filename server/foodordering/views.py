@@ -98,6 +98,81 @@ def all_orders(request):
     serializer = OrderSummarySerializer(orders, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+def orders_report(request):
+    try:
+        from_date = request.data.get('fromDate')
+        to_date = request.data.get('toDate')
+        status_report = request.data.get('status')
+        
+        if not from_date or not to_date:
+            return Response({'message': 'From date and to date are required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        orders = OrderAddress.objects.filter(order_time__date__range=[from_date, to_date])
+        
+        if status_report == 'not_confirmed':
+            orders = orders.filter(order_final_status__isnull=True)
+        elif status_report != 'all':
+            orders = orders.filter(order_final_status=status_report)
+
+        serializer = OrderSummarySerializer(orders.order_by('-order_time'), many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'message': f'Error generating report: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def view_order_detail(request, order_number):
+
+    order_address = OrderAddress.objects.select_related('user').get(
+        order_number=order_number
+    )
+
+    if not order_address:
+        return Response(
+            {'message': 'Order not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    ordered_foods = Order.objects.select_related('food').filter(
+        order_number=order_number
+    )
+
+    tracking = FoodTracking.objects.filter(
+        order__order_number=order_number
+    )
+
+    return Response({
+        'order_address': OrderDetailsSerializer(order_address).data,
+        'ordered_foods': OrderedFoodSerializer(ordered_foods, many=True).data,
+        'tracking_info': FoodTrackingSerializer(tracking, many=True).data,
+    }, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def update_order_status(request):
+    try:
+        order_number = request.data.get('order_number')
+        remark = request.data.get('remark')
+        status_update = request.data.get('status')
+
+        address = OrderAddress.objects.get(order_number=order_number)
+        order = Order.objects.filter(order_number=order_number).first()
+        if not order:
+            return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        FoodTracking.objects.create(
+            order=order,
+            remark=remark,
+            status=status_update,
+            order_cancelled_by_user=False
+        )
+        address.order_final_status = status_update
+        address.save()
+        return Response({'message': 'Order status updated successfully'}, status=status.HTTP_200_OK)
+       
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 # frontend 
 @api_view(['GET'])
 def food_search(request):
