@@ -38,6 +38,26 @@ def get_categories(request):
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET', 'PUT', 'DELETE'])
+def update_delete_category(request, cat_id):
+    try:
+        category = Category.objects.get(id=cat_id)
+    except Category.DoesNotExist:
+        return Response({'message': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        serializer = CategorySerializer(category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'PUT':
+        serializer = CategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Category updated successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        category.delete()
+        return Response({'message': 'Category deleted successfully'}, status=status.HTTP_200_OK)
+
+
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
 def add_food(request):
@@ -171,6 +191,16 @@ def update_order_status(request):
        
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def admin_search(request):
+    query = request.GET.get('q', '')
+    if query:
+        orders = OrderAddress.objects.filter(order_number__icontains=query).order_by('-order_time')
+    else:
+        orders = []
+    serializer = OrderSummarySerializer(orders, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # frontend 

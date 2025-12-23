@@ -163,7 +163,7 @@ const AdminSiderbar = () => {
           <FaCalendar /> Date Report
         </Link>
         <Link
-          to=""
+          to="/admin-search-order"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
           <FaSearch /> Search

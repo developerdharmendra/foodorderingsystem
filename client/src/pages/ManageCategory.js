@@ -25,6 +25,26 @@ const ManageCategory = () => {
       setCategories(filteredCategories);
     }
   };
+  const handelDelete = async (categoryId) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      try {
+        const response = await fetch(
+          `${process.env.REACT_APP_API_BASE_URL}update-delete-category/${categoryId}/`,
+          {
+            method: "DELETE",
+          }
+        );
+        if (response.ok) {
+          setCategories(categories.filter((cat) => cat.id !== categoryId));
+        } else {
+          console.error("Failed to delete category");
+        }
+      } catch (error) {
+        console.error("Error deleting category:", error);
+      }
+    }
+  };
+  
   return (
     <>
       <AdminLayout>
@@ -71,15 +91,15 @@ const ManageCategory = () => {
               </thead>
               <tbody>
                 {categories.map((category, index) => (
-                  <tr key={index}>
+                  <tr key={category.id}>
                     <td>{index + 1}</td>
                     <td>{category.category_name}</td>
                     <td>{new Date(category.creation_date).toLocaleString()}</td>
                     <td>
-                      <button className="btn btn-warning text-white btn-sm">
+                      <Link to={`/edit_category/${category.id}`} className="btn btn-warning text-white btn-sm">
                         <i className="fa fa-edit"></i>
-                      </button>
-                      <button className="btn btn-danger btn-sm ms-2">
+                      </Link>
+                      <button onClick={()=>handelDelete(category.id)} className="btn btn-danger btn-sm ms-2">
                         <i className="fa fa-trash"></i>
                       </button>
                     </td>

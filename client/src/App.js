@@ -25,6 +25,7 @@ import OrderCancelled from "./pages/OrderCancelled";
 import AllOrders from "./pages/AllOrders";
 import OrderReport from "./pages/OrderReport";
 import ViewFoodOrder from "./pages/ViewFoodOrder";
+import AdminSearch from "./pages/AdminSearch";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
           <Route path="/all-orders" element={<AllOrders />} />
           <Route path="/order-report" element={<OrderReport />} />
           <Route path="/admin-view-order-detail/:order_number" element={<ViewFoodOrder />} />
+          <Route path="/admin-search-order" element={<AdminSearch />} />
 
         </Routes>
       </BrowserRouter>

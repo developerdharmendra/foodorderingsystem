@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin-login/', admin_login_api, name='admin-login'),
     path('add-category/', add_category, name='add-category'),
     path('get-categories/', get_categories, name='get-categories'),
+    path('update-delete-category/<int:cat_id>/', update_delete_category, name='update-delete-category'),
     path('add-food/', add_food, name='add-food'),
     path('get-foods/', get_foods, name='get-foods'),
     path('orders-not-confirmed/', orders_not_confirmed, name='orders-not-confirmed'),
@@ -23,6 +24,7 @@ urlpatterns = [
     path('order-report/', orders_report, name='orders-report'),
     path('view-order-detail/<str:order_number>/', view_order_detail, name='view-order-detail'),
     path('update-order-tracking-info/', update_order_status, name='update-order-status' ),
+    path('admin-search/', admin_search, name='admin-search'),
 
 
     path('food-search/', food_search, name="food_search"),
