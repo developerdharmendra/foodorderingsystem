@@ -75,6 +75,37 @@ def get_foods(request):
     foods = Food.objects.all()
     serializer = FoodSerializer(foods, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+@api_view(['DELETE'])
+def food_delete(request, id):
+    try:
+        food = Food.objects.get(id=id)
+        food.delete()
+        return Response({'message': 'Food item deleted successfully'}, status=status.HTTP_200_OK)
+    except:
+        return Response({'message': 'Error deleting food item'}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['GET', 'PUT'])
+@parser_classes([MultiPartParser, FormParser])
+def food_edit(request,id):
+    try:
+        food = Food.objects.get(id=id)
+    except:
+        return Response({'message': 'Food item not found'}, status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        serializer = FoodSerializer(food)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'PUT':
+        data = request.data.copy()
+        if 'item_image' not in request.FILES:
+            data['item_image'] = food.item_image
+        if 'is_availabe' in data:
+            data['is_availabe'] = data['is_availabe'].lower() == 'true'
+
+        serializer = FoodSerializer(food, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Food item updated successfully'}, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def orders_not_confirmed(request):

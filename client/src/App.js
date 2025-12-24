@@ -26,6 +26,7 @@ import AllOrders from "./pages/AllOrders";
 import OrderReport from "./pages/OrderReport";
 import ViewFoodOrder from "./pages/ViewFoodOrder";
 import AdminSearch from "./pages/AdminSearch";
+import FoodEdit from "./pages/FoodEdit";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route path="/manage-category" element={<ManageCategory />} />
           <Route path="/add-food" element={<AddFood />} />
           <Route path="/manage-food" element={<ManageFood />} />
+          <Route path="/edit_food/:id" element={<FoodEdit />} />
           <Route path="/not-confirmed" element={<OrderNotConfirm />} />
           <Route path="/order-confirmed" element={<OrderConfirmed />} />
           <Route path="/food-prepared" element={<FoodBeingPrepared />} />

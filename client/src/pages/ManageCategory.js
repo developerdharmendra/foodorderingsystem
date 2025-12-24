@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import { Link } from "react-router-dom";
 import { CSVLink } from "react-csv";
+
 const ManageCategory = () => {
   const [categories, setCategories] = useState([]);
   const [allcategories, setAllcategories] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editCategory, setEditCategory] = useState({ id: '', category_name: '' });
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_BASE_URL}get-categories/`)
       .then((response) => response.json())
@@ -25,6 +28,35 @@ const ManageCategory = () => {
       setCategories(filteredCategories);
     }
   };
+  const handelEdit = (category) => {
+    setEditCategory({ id: category.id, category_name: category.category_name });
+    setShowModal(true);
+  };
+
+  const handelUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}update-delete-category/${editCategory.id}/`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category_name: editCategory.category_name })
+        }
+      );
+      if (response.ok) {
+        const updatedCategories = categories.map(cat => 
+          cat.id === editCategory.id ? { ...cat, category_name: editCategory.category_name } : cat
+        );
+        setCategories(updatedCategories);
+        setAllcategories(updatedCategories);
+        setShowModal(false);
+      }
+    } catch (error) {
+      console.error("Error updating category:", error);
+    }
+  };
+
   const handelDelete = async (categoryId) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
@@ -44,7 +76,7 @@ const ManageCategory = () => {
       }
     }
   };
-  
+
   return (
     <>
       <AdminLayout>
@@ -96,9 +128,9 @@ const ManageCategory = () => {
                     <td>{category.category_name}</td>
                     <td>{new Date(category.creation_date).toLocaleString()}</td>
                     <td>
-                      <Link to={`/edit_category/${category.id}`} className="btn btn-warning text-white btn-sm">
+                      <button onClick={() => handelEdit(category)} className="btn btn-warning text-white btn-sm">
                         <i className="fa fa-edit"></i>
-                      </Link>
+                      </button>
                       <button onClick={()=>handelDelete(category.id)} className="btn btn-danger btn-sm ms-2">
                         <i className="fa fa-trash"></i>
                       </button>
@@ -116,6 +148,37 @@ const ManageCategory = () => {
             </table>
           </div>
         </div>
+        
+        {showModal && (
+          <div className="modal show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Edit Category</h5>
+                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                </div>
+                <form onSubmit={handelUpdate}>
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label className="form-label">Category Name</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={editCategory.category_name}
+                        onChange={(e) => setEditCategory({...editCategory, category_name: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
+                    <button type="submit" className="btn btn-success"> Update</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
       </AdminLayout>
     </>
   );

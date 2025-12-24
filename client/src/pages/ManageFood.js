@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
 import { Link } from "react-router-dom";
 import { CSVLink } from "react-csv";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const ManageFood = () => {
   const [foods, setFoods] = useState([]);
   const [allfoods, setAllfoods] = useState([]);
@@ -29,10 +32,24 @@ const ManageFood = () => {
       setFoods(filteredFoods);
     }
   };
+  const handelDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete thsi food item ?")) {
+      fetch(`${process.env.REACT_APP_API_BASE_URL}food-delete/${id}/`, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          toast.success(data.message);
+          setFoods(foods.filter((food) => food.id !== id));
+        })
+        .catch((err) => console.error(err));
+    }
+  };
 
   return (
     <>
       <AdminLayout>
+        <ToastContainer position="top-right" autoClose={2000} />
         <h4 className="text-center mb-3">
           <i className="fa fa-list"></i> Manage Food
         </h4>
@@ -114,10 +131,16 @@ const ManageFood = () => {
                       {food.is_available ? "Yes" : "No"}
                     </td>
                     <td className="align-content-center">
-                      <button className="btn btn-warning text-white btn-sm">
+                      <Link
+                        to={`/edit_food/${food.id}`}
+                        className="btn btn-warning text-white btn-sm"
+                      >
                         <i className="fa fa-edit"></i>
-                      </button>
-                      <button className="btn btn-danger btn-sm ms-2">
+                      </Link>
+                      <button
+                        onClick={() => handelDelete(food.id)}
+                        className="btn btn-danger btn-sm ms-2"
+                      >
                         <i className="fa fa-trash"></i>
                       </button>
                     </td>
