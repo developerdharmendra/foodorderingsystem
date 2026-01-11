@@ -42,7 +42,7 @@ const AdminSiderbar = () => {
           <FaThLarge /> Dashboard
         </Link>
         <Link
-          to=""
+          to="/users"
           className="list-group-item list-group-item-action bg-dark text-white border-0"
         >
           <FaUsers /> Users

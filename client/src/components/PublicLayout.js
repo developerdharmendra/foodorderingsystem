@@ -17,18 +17,32 @@ import "../styles/layout.css";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCart } from "../context/CartContext";
 
 const PublicLayout = ({ children }) => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const {cartCount, setCartCount} = useCart();
 
   const userId = localStorage.getItem("userId");
   const name = localStorage.getItem("userName");
+
+  const fetchCartCount = async () => {
+    if (userId) {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}cart/${userId}`
+      );
+      const data = await response.json();
+      setCartCount(data.length);
+    }
+  };
+
   useEffect(() => {
     if (userId) {
       setIsLoggedIn(true);
       setUserName(name);
+      fetchCartCount();
     } else {
       setIsLoggedIn(false);
     }
@@ -37,8 +51,9 @@ const PublicLayout = ({ children }) => {
   const handleLogout = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("userName");
-    toast.success("Logout successful")
+    toast.success("Logout successful");
     setIsLoggedIn(false);
+    setCartCount(0);
     setTimeout(() => {
       navigate("/login");
     }, 2000);
@@ -81,7 +96,7 @@ const PublicLayout = ({ children }) => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="" className="nav-link">
+                <Link to="/menu" className="nav-link">
                   <FaUtensils /> Menu
                 </Link>
               </li>
@@ -118,11 +133,11 @@ const PublicLayout = ({ children }) => {
                   </li>
                   <li className="nav-item">
                     <Link to="/cart" className="nav-link">
-                      <FaShoppingCart /> Cart
+                      <FaShoppingCart /> Cart{cartCount > 0 && `(${cartCount})`}
                     </Link>
                   </li>
                   <li className="nav-item me-2">
-                    <Link to="/cart" className="nav-link">
+                    <Link to="/wishlist" className="nav-link">
                       <FaHeart /> Wishlist
                     </Link>
                   </li>
@@ -150,9 +165,12 @@ const PublicLayout = ({ children }) => {
                       {initials}
                     </a>
 
-                    <ul className="dropdown-menu mt-3 rounded-0" style={{marginLeft:"-25px"}}>
+                    <ul
+                      className="dropdown-menu mt-3 rounded-0"
+                      style={{ marginLeft: "-25px" }}
+                    >
                       <li className="dropdown-item">{userName}</li>
-                      <hr className="py-1 my-0"/>
+                      <hr className="py-1 my-0" />
                       <li>
                         <Link to="/my-profile" className="dropdown-item">
                           <FaUser /> Profile
@@ -166,7 +184,6 @@ const PublicLayout = ({ children }) => {
 
                       <li>
                         <button
-                          
                           className="dropdown-item text-danger"
                           onClick={handleLogout}
                         >
@@ -180,7 +197,7 @@ const PublicLayout = ({ children }) => {
             </ul>
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={2000} />
+       
       </nav>
       <main className="mt-5 pt-3 bg-body-secondary">{children}</main>
       <footer className="bg-light py-3 text-center">

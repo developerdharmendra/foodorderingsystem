@@ -12,6 +12,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from xhtml2pdf import pisa
+from django.utils.timezone import now, timedelta
+from django.db.models import Sum, F
 
 # Create your views here.
 @api_view(['POST'])
@@ -23,6 +25,72 @@ def admin_login_api(request):
     if user is not None and user.is_staff:
         return Response({'message': 'Login successful', "username": username }, status=status.HTTP_200_OK)
     return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['GET'])
+def dashboard_metrices(request):
+    today = now().date()
+    start_week = today - timedelta(days=today.weekday())
+    start_month = today.replace(day=1)
+    start_year = today.replace(month=1, day=1)
+
+    def get_sales_total(start_date):
+        paid_orders = PaymentDetails.objects.filter(payemnt_date__date__gte=start_date).values_list('order_number', flat=True).distinct()
+        total = Order.objects.filter(order_number__in=paid_orders).annotate(
+            total_price=F('quantity') * F('food__item_price')
+        ).aggregate(sale_amount=Sum('total_price'))['sale_amount'] or 0.0
+        return total
+                
+    total_users = RegisterUser.objects.count()
+    total_orders = OrderAddress.objects.count()
+    total_foods = Food.objects.count()
+    total_orders_confirmed = OrderAddress.objects.filter(order_final_status='Order Confirmed').count()
+    total_orders_delivered = OrderAddress.objects.filter(order_final_status='Food Delivered').count()
+    total_orders_cancelled = OrderAddress.objects.filter(order_final_status='Order Cancelled').count()
+    total_orders_not_confirmed = OrderAddress.objects.filter(order_final_status__isnull=True).count()
+    total_orders_being_prepared = OrderAddress.objects.filter(order_final_status='Food Being Prepared').count()
+    total_orders_pickup = OrderAddress.objects.filter(order_final_status='Food Pickup').count()
+    total_categories = Category.objects.count()
+    today_sales = get_sales_total(today)
+    weeks_sales = get_sales_total(start_week)
+    monthly_sales = get_sales_total(start_month)
+    yearly_sales = get_sales_total(start_year)
+    total_reviews = Review.objects.count()
+    total_wishlists = Wishlist.objects.count()
+    return Response({
+        'total_Users': total_users,
+        'total_Orders': total_orders,
+        'total_foods': total_foods,
+        'confirmed_orders': total_orders_confirmed,
+        'food_delivered': total_orders_delivered,
+        'cancelled_orders': total_orders_cancelled,
+        'new_Orders': total_orders_not_confirmed,
+        'food_preparing': total_orders_being_prepared,
+        'food_pickup': total_orders_pickup,
+        'total_catagories': total_categories,
+        'today_sales': today_sales,
+        'weeks_sales': weeks_sales,
+        'monthly_sales': monthly_sales,
+        'yearly_sales': yearly_sales,
+        'total_reviews': total_reviews,
+        'total_wishlists': total_wishlists
+    }, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_users(request):
+    users = RegisterUser.objects.all().order_by('-id')
+    serializer = RegisterUserSerializer(users, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def delete_user(request,id):
+    try:
+        user = RegisterUser.objects.get(id=id)
+        user.delete()
+        return Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)
+    except:
+        return Response({'message': 'Error deleting user'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def add_category(request):

@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import AdminLayout from "../components/AdminLayout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CSVLink } from "react-csv";
 
 const ManageCategory = () => {
+  const adminuser = localStorage.getItem("adminUser");
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [allcategories, setAllcategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [editCategory, setEditCategory] = useState({ id: '', category_name: '' });
+  const [editCategory, setEditCategory] = useState({
+    id: "",
+    category_name: "",
+  });
   useEffect(() => {
+    if (!adminuser) {
+      navigate("/admin-login");
+      return;
+    }
     fetch(`${process.env.REACT_APP_API_BASE_URL}get-categories/`)
       .then((response) => response.json())
       .then((data) => {
@@ -41,12 +50,14 @@ const ManageCategory = () => {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ category_name: editCategory.category_name })
+          body: JSON.stringify({ category_name: editCategory.category_name }),
         }
       );
       if (response.ok) {
-        const updatedCategories = categories.map(cat => 
-          cat.id === editCategory.id ? { ...cat, category_name: editCategory.category_name } : cat
+        const updatedCategories = categories.map((cat) =>
+          cat.id === editCategory.id
+            ? { ...cat, category_name: editCategory.category_name }
+            : cat
         );
         setCategories(updatedCategories);
         setAllcategories(updatedCategories);
@@ -128,10 +139,16 @@ const ManageCategory = () => {
                     <td>{category.category_name}</td>
                     <td>{new Date(category.creation_date).toLocaleString()}</td>
                     <td>
-                      <button onClick={() => handelEdit(category)} className="btn btn-warning text-white btn-sm">
+                      <button
+                        onClick={() => handelEdit(category)}
+                        className="btn btn-warning text-white btn-sm"
+                      >
                         <i className="fa fa-edit"></i>
                       </button>
-                      <button onClick={()=>handelDelete(category.id)} className="btn btn-danger btn-sm ms-2">
+                      <button
+                        onClick={() => handelDelete(category.id)}
+                        className="btn btn-danger btn-sm ms-2"
+                      >
                         <i className="fa fa-trash"></i>
                       </button>
                     </td>
@@ -148,14 +165,21 @@ const ManageCategory = () => {
             </table>
           </div>
         </div>
-        
+
         {showModal && (
-          <div className="modal show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
+          <div
+            className="modal show d-block"
+            style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          >
             <div className="modal-dialog">
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title">Edit Category</h5>
-                  <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setShowModal(false)}
+                  ></button>
                 </div>
                 <form onSubmit={handelUpdate}>
                   <div className="modal-body">
@@ -165,14 +189,28 @@ const ManageCategory = () => {
                         type="text"
                         className="form-control"
                         value={editCategory.category_name}
-                        onChange={(e) => setEditCategory({...editCategory, category_name: e.target.value})}
+                        onChange={(e) =>
+                          setEditCategory({
+                            ...editCategory,
+                            category_name: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
                   </div>
                   <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                    <button type="submit" className="btn btn-success"> Update</button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShowModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn btn-success">
+                      {" "}
+                      Update
+                    </button>
                   </div>
                 </form>
               </div>

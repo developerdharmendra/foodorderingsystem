@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaMinus, FaPlus } from "react-icons/fa";
+import { useCart } from "../context/CartContext";
 
 const Cart = () => {
   const userId = localStorage.getItem("userId");
   const [cartItems, setCartItems] = useState([]);
+  const { cartCount, setCartCount } = useCart();
   const [grandTotal, setGrandTotal] = useState(0);
   const navigate = useNavigate();
 
@@ -61,6 +63,7 @@ const Cart = () => {
           0
         );
         setGrandTotal(total);
+        setCartCount(data.length);
         toast.success("Quantity updated successfully");
       }
     } catch (error) {
@@ -92,6 +95,7 @@ const Cart = () => {
           0
         );
         setGrandTotal(total);
+        setCartCount(data.length);
         toast.success(data.message || "Item deleted successfully");
       }
     } catch (error) {
@@ -167,7 +171,10 @@ const Cart = () => {
                             >
                               <FaPlus />
                             </button>
-                            <button className="btn btn-outline-danger btn-sm ms-3" onClick={() => deleteCartItem(item.id)}>
+                            <button
+                              className="btn btn-outline-danger btn-sm ms-3"
+                              onClick={() => deleteCartItem(item.id)}
+                            >
                               <i className="fas fa-trash"></i>
                             </button>
                           </td>
@@ -182,9 +189,10 @@ const Cart = () => {
                         <td>
                           <button
                             className="btn btn-outline-success btn-sm"
-                            onClick={()=> navigate("/payment")}
+                            onClick={() => navigate("/payment")}
                           >
-                            <i className="fa fa-shopping-cart"></i> Proceed to Payment
+                            <i className="fa fa-shopping-cart"></i> Proceed to
+                            Payment
                           </button>
                         </td>
                       </tr>

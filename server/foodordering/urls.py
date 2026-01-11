@@ -9,6 +9,9 @@ urlpatterns = [
     path('login/', login_user, name='login'),
 
     path('admin-login/', admin_login_api, name='admin-login'),
+    path('dashboard_metrices/', dashboard_metrices, name='dashboard-metrices'),
+    path('get-users/', get_users, name='get-users'),
+    path('delete-user/<int:id>/', delete_user, name='delte-users'),
     path('add-category/', add_category, name='add-category'),
     path('get-categories/', get_categories, name='get-categories'),
     path('update-delete-category/<int:cat_id>/', update_delete_category, name='update-delete-category'),

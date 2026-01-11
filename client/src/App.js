@@ -27,10 +27,13 @@ import OrderReport from "./pages/OrderReport";
 import ViewFoodOrder from "./pages/ViewFoodOrder";
 import AdminSearch from "./pages/AdminSearch";
 import FoodEdit from "./pages/FoodEdit";
+import RegisterUser from "./pages/RegisterUser";
+import { CartProvider } from "./context/CartContext";
+import FoodList from "./pages/FoodList";
 
 function App() {
   return (
-    <>
+    <CartProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -38,6 +41,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/food/:id" element={<FoodDetails />} />
+          <Route path="/menu" element={<FoodList />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/my-orders" element={<Myorders />} />
@@ -62,10 +66,11 @@ function App() {
           <Route path="/order-report" element={<OrderReport />} />
           <Route path="/admin-view-order-detail/:order_number" element={<ViewFoodOrder />} />
           <Route path="/admin-search-order" element={<AdminSearch />} />
+          <Route path="/users" element={<RegisterUser />} />
 
         </Routes>
       </BrowserRouter>
-    </>
+    </CartProvider>
   );
 }
 
